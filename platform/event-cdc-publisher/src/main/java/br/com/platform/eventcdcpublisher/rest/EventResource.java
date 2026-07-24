@@ -1,9 +1,9 @@
-package br.com.platform.eventapi.rest;
+package br.com.platform.eventcdcpublisher.rest;
 
-import br.com.platform.eventapi.domain.PlatformEvent;
-import br.com.platform.eventapi.rest.dto.EventRequest;
-import br.com.platform.eventapi.rest.dto.EventResponse;
-import br.com.platform.eventapi.service.EventIngestionService;
+import br.com.platform.eventcdcpublisher.domain.PlatformEvent;
+import br.com.platform.eventcdcpublisher.rest.dto.EventRequest;
+import br.com.platform.eventcdcpublisher.rest.dto.EventResponse;
+import br.com.platform.eventcdcpublisher.service.EventIngestionService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -13,15 +13,11 @@ import jakarta.ws.rs.core.Response;
 
 /**
  * Generic event ingestion REST API.
- * CQRS Command Gateway - Fast Dispatching only.
- *
- * All cell identity is carried via headers — no URL path segments with domain names.
- * This single resource handles events from ANY cell in the platform.
- *
+ * 
  * Headers:
- *   X-Cell-Id      — identifies the cell (maps to Apicurio group)
- *   X-Event-Type   — identifies the event schema (maps to Apicurio artifact)
- *   Idempotency-Key — optional deduplication key (RFC 8925 style)
+ * X-Cell-Id — identifies the cell (maps to Apicurio group)
+ * X-Event-Type — identifies the event schema (maps to Apicurio artifact)
+ * Idempotency-Key — optional deduplication key (RFC 8925 style)
  */
 @Path("/api/v1/events")
 @Produces(MediaType.APPLICATION_JSON)
@@ -61,8 +57,7 @@ public class EventResource {
                 event.status,
                 event.cellId,
                 event.eventType,
-                event.createdAt
-        );
+                event.createdAt);
 
         return Response.accepted(resp).build();
     }

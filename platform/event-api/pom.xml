@@ -3,18 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!--
-        platform/event-api — Generic event ingestion API.
-        Handles ANY payload from ANY cell. No business domain names here.
-        Customers customize via Apicurio schemas + env vars only.
-    -->
+
     <groupId>br.com.platform</groupId>
     <artifactId>event-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
-        <!-- Rule #25: Java 25 MANDATORY for all Java platform services -->
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -30,13 +25,6 @@
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
                 <version>${quarkus.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkiverse.amazonservices</groupId>
-                <artifactId>quarkus-amazon-services-bom</artifactId>
-                <version>3.21.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -60,15 +48,18 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-redis-client</artifactId>
         </dependency>
-        <!-- AWS SNS: generic event publishing -->
+        <!-- Database / CQRS Outbox -->
         <dependency>
-            <groupId>io.quarkiverse.amazonservices</groupId>
-            <artifactId>quarkus-amazon-sns</artifactId>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>url-connection-client</artifactId>
-            <version>2.25.60</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-flyway</artifactId>
         </dependency>
         <!-- Platform CloudEvents SDK -->
         <dependency>

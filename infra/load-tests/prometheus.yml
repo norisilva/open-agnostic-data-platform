@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'quarkus-apps'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.containers.internal:8080', 'host.containers.internal:8081']

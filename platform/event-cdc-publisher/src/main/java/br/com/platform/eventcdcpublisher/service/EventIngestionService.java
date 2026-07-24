@@ -1,7 +1,7 @@
-package br.com.platform.eventapi.service;
+package br.com.platform.eventcdcpublisher.service;
 
 import br.com.platform.cloudevents.PlatformCloudEvent;
-import br.com.platform.eventapi.domain.PlatformEvent;
+import br.com.platform.eventcdcpublisher.domain.PlatformEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.redis.datasource.RedisDataSource;

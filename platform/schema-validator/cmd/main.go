@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/multiframeworks-renegociation/platform/schema-validator/internal/config"
-	"github.com/multiframeworks-renegociation/platform/schema-validator/internal/sqs"
+	"github.com/multiframeworks-renegociation/platform/schema-validator/internal/rabbitmq"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	consumer, err := sqs.NewConsumer(cfg)
+	consumer, err := rabbitmq.NewConsumer(cfg)
 	if err != nil {
 		log.Fatalf("Failed to initialize consumer: %v", err)
 	}
