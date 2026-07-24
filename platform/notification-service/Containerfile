@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/ubi9/ubi-micro:latest
+WORKDIR /work/
+COPY --chown=1001:root target/*-runner /work/application
+EXPOSE 8081
+USER 1001
+# Required env vars: DB_URL, DB_USER, DB_PASS, AWS_REGION,
+#                    NOTIFICATION_QUEUE_URL, MAILER_HOST, MAILER_FROM,
+#                    OTEL_EXPORTER_OTLP_ENDPOINT
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

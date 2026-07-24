@@ -1,0 +1,6 @@
+FROM registry.access.redhat.com/ubi9/ubi-micro:latest
+WORKDIR /work/
+COPY --chown=1001:root target/*-runner /work/application
+EXPOSE 8080
+USER 1001
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

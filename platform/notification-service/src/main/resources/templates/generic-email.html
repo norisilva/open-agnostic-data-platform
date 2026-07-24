@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{subject}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #fff; border-radius: 8px; padding: 32px; }
+        .header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 16px; margin-bottom: 24px; }
+        .footer { text-align: center; color: #999; font-size: 12px; margin-top: 32px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+        td:first-child { font-weight: bold; color: #555; width: 40%; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>{title}</h2>
+    </div>
+    <p>Olá, {recipientName}!</p>
+    <p>{message}</p>
+
+    {#if details}
+    <table>
+        {#for entry in details.entrySet()}
+        <tr>
+            <td>{entry.key}</td>
+            <td>{entry.value}</td>
+        </tr>
+        {/for}
+    </table>
+    {/if}
+
+    <div class="footer">
+        <p>Este é um e-mail automático. Por favor, não responda.</p>
+        <p>{footerText}</p>
+    </div>
+</div>
+</body>
+</html>

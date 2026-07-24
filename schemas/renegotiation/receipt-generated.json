@@ -1,0 +1,12 @@
+{
+  "$id": "https://platform.com/schemas/renegotiation/receipt-generated.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Receipt Generated",
+  "type": "object",
+  "properties": {
+    "originalDebtId": { "type": "string" },
+    "receiptId": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" }
+  },
+  "required": ["originalDebtId", "receiptId", "timestamp"]
+}

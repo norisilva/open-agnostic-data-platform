@@ -1,0 +1,21 @@
+{
+  "$id": "https://platform.com/schemas/renegotiation/payment-validated.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Payment Validated",
+  "type": "object",
+  "properties": {
+    "originalDebtId": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "isValid": {
+      "type": "boolean"
+    },
+    "validationMessage": {
+      "type": "string"
+    }
+  },
+  "required": ["originalDebtId", "isValid"]
+}

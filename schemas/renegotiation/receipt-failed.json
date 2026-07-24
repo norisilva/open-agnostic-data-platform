@@ -1,0 +1,12 @@
+{
+  "$id": "https://platform.com/schemas/renegotiation/receipt-failed.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Receipt Failed",
+  "type": "object",
+  "properties": {
+    "originalDebtId": { "type": "string" },
+    "errorCode": { "type": "string" },
+    "errorMessage": { "type": "string" }
+  },
+  "required": ["originalDebtId", "errorMessage"]
+}

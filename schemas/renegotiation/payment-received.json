@@ -1,0 +1,22 @@
+{
+  "$id": "https://platform.com/schemas/renegotiation/payment-received.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Payment Received",
+  "type": "object",
+  "properties": {
+    "originalDebtId": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0.01
+    },
+    "paymentMethod": {
+      "type": "string"
+    },
+    "barcode": {
+      "type": "string"
+    }
+  },
+  "required": ["originalDebtId", "amount", "barcode"]
+}

@@ -1,0 +1,13 @@
+{
+  "$id": "https://platform.com/schemas/renegotiation/notification-sent.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Notification Sent",
+  "type": "object",
+  "properties": {
+    "originalDebtId": { "type": "string" },
+    "channel": { "type": "string" },
+    "destination": { "type": "string" },
+    "status": { "type": "string" }
+  },
+  "required": ["originalDebtId", "channel", "destination", "status"]
+}
