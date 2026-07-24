@@ -39,7 +39,7 @@ flowchart TD
 *   Java 25: Used for high-throughput platform services, leveraging GraalVM and Virtual Threads.
 *   Quarkus 3.37.x: Cloud-native Java framework for Gateway and Webhook integrations.
 *   Go 1.22: Used for lightweight utility workers (Schema Validator).
-*   Databases: PostgreSQL, MongoDB, Redis.
+*   Databases: MongoDB, Redis.
 *   Messaging: LocalStack (SQS/SNS), Redpanda (Kafka), Apicurio Registry.
 
 ## Local Environment Setup
@@ -53,7 +53,3 @@ The entire infrastructure runs locally via Podman Kube Play, utilizing native Ku
    `podman kube play infra/k8s-local/02-messaging.yaml`
    `podman kube play infra/k8s-local/03-observability.yaml`
    `podman kube play infra/k8s-local/04-services.yaml`
-
-## Documentation
-
-Detailed documentation and ADRs can be found in the `docs/` folder.
