@@ -27,7 +27,7 @@ Funcionalidade: Motor Preditivo de IA Agnóstico
     E o LLM devolve a análise
     Então o resultado final da predição deve ser "NEGADO"
     E a justificativa do LLM deve constar a violação da "Hard Rule"
-    E o evento de "prediction.completed" deve ser emitido via SNS no tópico adequado
+    E o evento de "prediction.completed" deve ser emitido via RabbitMQ na exchange adequada
     E o timer de fallback no NATS-Schedule deve ser cancelado
 
   Cenário: IA aplica Soft Rules e utiliza avaliação probabilística para otimização

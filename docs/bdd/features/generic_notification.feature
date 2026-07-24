@@ -12,8 +12,8 @@ Funcionalidade: Envio de Notificações Genéricas
   Para notificar clientes finais sem precisar conhecer regras de domínio de nenhuma Célula
 
   Contexto:
-    Dado que o "notification-service" está escutando a fila SQS
-    E o servidor SMTP (Mailpit/SES) está configurado via variáveis de ambiente
+    Dado que o "notification-service" está escutando a fila do RabbitMQ
+    E o servidor SMTP genérico (Mailpit) está configurado via variáveis de ambiente
 
   Cenário: Envio de notificação com sucesso utilizando Template Engine
     Dado que um evento "notification.requested" é consumido da fila

@@ -1,6 +1,8 @@
 package br.com.platform.eventapi.service;
 
 import br.com.platform.cloudevents.PlatformCloudEvent;
+import br.com.platform.eventapi.domain.CommandOutboxEntity;
+import br.com.platform.eventapi.domain.CommandRepository;
 import br.com.platform.eventapi.domain.PlatformEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,10 +10,10 @@ import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sns.model.PublishRequest;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -21,14 +23,10 @@ import java.util.UUID;
 public class EventIngestionService {
 
     @Inject
-    SnsClient snsClient;
+    CommandRepository commandRepository;
 
     @Inject
     ObjectMapper mapper;
-
-    @ConfigProperty(name = "platform.sns.topic-arn-pattern",
-                    defaultValue = "arn:aws:sns:us-east-1:000000000000:%s-events")
-    String snsTopicArnPattern;
 
     @ConfigProperty(name = "platform.idempotency.ttl-seconds", defaultValue = "86400")
     int idempotencyTtlSeconds;
@@ -39,6 +37,7 @@ public class EventIngestionService {
         this.redisCache = ds.value(String.class);
     }
 
+    @Transactional
     public PlatformEvent ingest(String cellId, String eventType, JsonNode payload, String idempotencyKey) {
         if (idempotencyKey != null) {
             String cachedId = redisCache.get("idem:" + idempotencyKey);
@@ -61,11 +60,16 @@ public class EventIngestionService {
                     .correlationId(event.id.toString())
                     .build();
 
-            String topicArn = String.format(snsTopicArnPattern, cellId);
-            snsClient.publish(PublishRequest.builder()
-                    .topicArn(topicArn)
-                    .message(mapper.writeValueAsString(cloudEvent))
-                    .build());
+            CommandOutboxEntity outbox = new CommandOutboxEntity();
+            outbox.id = event.id;
+            outbox.cellId = cellId;
+            outbox.eventType = eventType;
+            outbox.payload = mapper.writeValueAsString(cloudEvent);
+            outbox.status = "PENDING";
+            outbox.idempotencyKey = idempotencyKey;
+            outbox.createdAt = Instant.now();
+
+            commandRepository.persist(outbox);
 
             event.status = "PUBLISHED";
         } catch (Exception ex) {

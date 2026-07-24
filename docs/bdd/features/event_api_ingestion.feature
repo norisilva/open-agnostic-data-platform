@@ -24,7 +24,7 @@ Funcionalidade: Recebimento e Roteamento Genérico de Eventos
     Quando o "event-api" processa a requisição
     Então o payload deve ser validado contra o schema "credit.solicitation" do Apicurio
     E o payload deve ser empacotado em um envelope "CloudEvents 1.0"
-    E o evento deve ser publicado no tópico SNS associado à célula
+    E o evento deve ser publicado na exchange do RabbitMQ associada à célula
     E a chave de idempotência deve ser salva no Redis com TTL de 24 horas
     E a API deve retornar HTTP status code 202 (Accepted)
 
@@ -32,5 +32,5 @@ Funcionalidade: Recebimento e Roteamento Genérico de Eventos
     Dado que o cliente envia um POST idêntico utilizando a mesma "Idempotency-Key" de uma chamada anterior bem-sucedida
     E a chave ainda está presente no Redis
     Quando o "event-api" verifica a chave no Redis
-    Então o serviço não deve republicar o evento no SNS
+    Então o serviço não deve republicar o evento no RabbitMQ
     E a API deve retornar sucesso (HTTP 202) silenciosamente (Cached Response)

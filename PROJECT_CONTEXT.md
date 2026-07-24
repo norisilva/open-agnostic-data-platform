@@ -1,162 +1,142 @@
-# PROJECT CONTEXT — Plataforma Agnóstica Multi-Celular
-> **Leia este arquivo + `ROADMAP.md` em toda nova sessão.**
-> Última atualização: 2026-07-23 | Sessão: 01
+# PROJECT CONTEXT - Plataforma Agnostica Multi-Celular
+> **Leia este arquivo + `ROADMAP.md` em toda nova sessao.**
+> Ultima atualizacao: 2026-07-24 | Sessao: 01
 
 ---
 
 ## Objetivo do Projeto
 
-**Plataforma agnóstica de processamento de eventos financeiros**, baseada em Cell-Based Architecture.
-Microsserviços políglotas (Java 25+ e Go 1.22), CloudEvents (CNCF), Apicurio Schema Registry,
+**Plataforma agnostica de processamento de eventos financeiros**, baseada em Cell-Based Architecture.
+Microsservicos poliglotas (Java 25+ e Go 1.22), CloudEvents (CNCF), Apicurio Schema Registry,
 Lakehouse Medallion (Apache Iceberg), observabilidade LGTM completa.
 
-O primeiro **produto-cliente** da plataforma é o sistema de **Renegociação de Dívidas (> 180 dias)**.
+O primeiro **produto-cliente** da plataforma e o sistema de **Renegociacao de Dividas (> 180 dias)**, atuando como Celula 01.
 
-Infraestrutura local via **Kubernetes YAML (`podman kube play`)** — sem Docker.
+Infraestrutura local via **Kubernetes YAML (`podman kube play`)** - sem Docker.
 Horizonte: ~30 dias de desenvolvimento incremental.
 
 ---
 
 ## Tracking de Progresso
 
-> **O arquivo de tracking é `ROADMAP.md`** (na raiz do projeto).
-> Ele contém 10 fases, sub-fases detalhadas e instruções de atualização.
-> Não use `task.md` — ele foi substituído pelo ROADMAP.
+> **O arquivo de tracking e `ROADMAP.md`** (na raiz do projeto).
+> Ele contem 10 fases, sub-fases detalhadas e instrucoes de atualizacao.
+> Nao use `task.md` - ele foi substituido pelo ROADMAP.
 
 ---
 
-## Decisões Tomadas (não reverter sem discussão)
+## Decisoes Tomadas (nao reverter sem discussao)
 
-| # | Decisão | Justificativa | Data |
+| # | Decisao | Justificativa | Data |
 |---|---------|---------------|------|
-| 1 | Java 25+ + Quarkus 3.21 (LTS) | Virtual Threads, Leyden, últimas features JVM | 2026-07-23 |
-| 2 | Go 1.22 para workers SQS | Goroutines, startup zero, imagem ~8MB | 2026-07-23 |
-| 3 | Hexagonal Architecture no Quarkus | Testabilidade, isolamento de dependências | 2026-07-23 |
+| 1 | Java 25+ + Quarkus 3.37+ | Virtual Threads nativas e otimizacoes de startup | 2026-07-23 |
+| 2 | Go 1.22 para workers | Goroutines, startup zero, imagens ultraleves | 2026-07-23 |
+| 3 | Hexagonal Architecture no Quarkus | Testabilidade, isolamento de dependencias | 2026-07-23 |
 | 4 | Clean Architecture no Go | Controle de deps, interfaces para test mocks | 2026-07-23 |
-| 5 | Podman Kube Play (não Docker) | K8s manifests nativos, máquina só tem Podman | 2026-07-23 |
-| 6 | `Containerfile` (não `Dockerfile`) | Podman usa Containerfile por padrão | 2026-07-23 |
-| 7 | LGTM stack (Loki+Grafana+Tempo+Prom) | Padrão mercado 2026, tudo local | 2026-07-23 |
-| 8 | OTel Collector como hub central | Desacopla serviços dos backends | 2026-07-23 |
-| 9 | W3C TraceContext via SQS headers | traceId end-to-end Java→Go | 2026-07-23 |
+| 5 | Podman Kube Play (nao Docker) | K8s manifests nativos | 2026-07-23 |
+| 6 | `Containerfile` (nao `Dockerfile`) | Podman usa Containerfile por padrao | 2026-07-23 |
+| 7 | LGTM stack (Loki+Grafana+Tempo+Prom) | Padrao de observabilidade E2E | 2026-07-23 |
+| 8 | OTel Collector como hub central | Desacopla servicos dos backends analiticos | 2026-07-23 |
+| 9 | W3C TraceContext via headers AMQP | traceId end-to-end Java->Go via RabbitMQ | 2026-07-23 |
 | 10 | Mailpit para email local | SMTP mock sem internet | 2026-07-23 |
-| 11 | PostgreSQL write-store (CQRS) | Consistência transacional ACID | 2026-07-23 |
-| 12 | Redis read-store + idempotência | Cache + prevenção de duplicatas (TTL 24h) | 2026-07-23 |
-| 13 | MongoDB para audit + receipts | Flexibilidade de schema, append-only | 2026-07-23 |
-| 14 | SNS fan-out para todos os eventos | Desacoplamento, múltiplos subscribers | 2026-07-23 |
-| 15 | Saga coreografado (não orquestrado) | Evita SPOF do orquestrador | 2026-07-23 |
-| 16 | Correlação de Entidade (`baseEntityId`) | Link do evento ↔ entidade base original do negócio | 2026-07-23 |
-| 17 | MongoDB Change Streams | Reatividade CDC nativo para Go workers | 2026-07-23 |
-| 18 | **Plataforma Multi-Celular (Cell-Based Arch)** | Código único, infra isolada por produto | 2026-07-23 |
-| 19 | **CloudEvents 1.0 (CNCF)** | Envelope padronizado, agnóstico de domínio | 2026-07-23 |
-| 20 | **Apicurio Registry 3.x (CNCF Sandbox)** | Schema Registry com UI, validação dinâmica | 2026-07-23 |
-| 21 | **Lakehouse Medallion (Iceberg + S3)** | Pipeline analítico Bronze→Silver→Gold | 2026-07-23 |
-| 22 | **Terraform para IaC de Células** | Provisionamento automatizado de células | 2026-07-23 |
-| 23 | **k6 para testes de carga** | Stress test da API e validação SLI | 2026-07-23 |
-| 24 | **Scripts operacionais em Bash (.sh)** | Portabilidade para Linux/ECS/EKS/WSL (NÃO usar `.ps1`) | 2026-07-23 |
-| 25 | **Java 25 + GraalVM + Virtual Threads** | MANDATÓRIO e INEGOCIÁVEL para todos os serviços feitos em Java. | 2026-07-23 |
-| 26 | **Design for IaC (Terraform-ready)** | Serviços devem ser 100% parametrizáveis (12-Factor App) para facilitar o futuro deploy automatizado via Terraform. | 2026-07-23 |
-| 27 | **Plataforma agnóstica e vendavel** | NENHUM serviço de plataforma pode ter nomes de domínio de negócio (`payment`, `renegotiation`, `nori`, etc). O cliente customiza via schemas Apicurio + templates Qute + env vars. Pacotes: `br.com.platform.*`. Nomes de servico: `event-api`, `notification-service`, `cell-router`, `schema-validator`. | 2026-07-23 |
-| 28 | **CQRS Fast Dispatching** | A API Gateway (`event-api`) NÃO pode ter acoplamento/acesso síncrono a bancos relacionais (SQL). Ela deve fazer apenas Fast Dispatching (validação, Redis para cache/idempotência e publish no SNS/Broker). A persistência é assíncrona feita pelo `platform/event-persister`. | 2026-07-24 |
+| 11 | PostgreSQL (Write Store / Comandos) | Fonte da Verdade. Consistencia transacional ACID. | 2026-07-24 |
+| 12 | Redis (Cache / Rate Limiting) | Idempotencia rapida nas APIs (TTL 24h) | 2026-07-23 |
+| 13 | MongoDB (Read Store / Consultas) | CQRS Hibrido. JSON desnormalizado para as APIs. | 2026-07-24 |
+| 14 | RabbitMQ (Fan-out) + Kafka (Lakehouse)| Zero vendor lock-in. Substitui SNS/SQS da AWS. | 2026-07-24 |
+| 15 | Saga Coreografado (nao orquestrado) | Evita SPOF do orquestrador via Webhooks | 2026-07-23 |
+| 16 | Correlacao de Entidade (`baseEntityId`) | Link do evento a entidade base original do negocio | 2026-07-23 |
+| 17 | Debezium (Change Data Capture) | Padrao Outbox/CDC passivo lendo WAL do Postgres | 2026-07-24 |
+| 18 | **Plataforma Multi-Celular** | Codigo unico, infra isolada por produto | 2026-07-23 |
+| 19 | **CloudEvents 1.0 (CNCF)** | Envelope padronizado, agnostico de dominio | 2026-07-23 |
+| 20 | **Apicurio Registry 3.x** | Schema Registry com UI, validacao dinamica | 2026-07-23 |
+| 21 | **Lakehouse Medallion (Iceberg + MinIO)** | Pipeline analitico isolado. Sem carga na base transacional | 2026-07-24 |
+| 22 | **Terraform para IaC de Celulas** | Provisionamento automatizado de celulas | 2026-07-23 |
+| 23 | **k6 para testes de carga** | Stress test da API e validacao SLI | 2026-07-23 |
+| 24 | **Scripts operacionais em Bash (.sh)** | Portabilidade para Linux/WSL (NAO usar `.ps1`) | 2026-07-23 |
+| 25 | **Java 25 + GraalVM + Virtual Threads** | MANDATORIO e INEGOCIAVEL para servicos Java. | 2026-07-23 |
+| 26 | **12-Factor App (Terraform-ready)** | Servicos 100% parametrizaveis (application.properties). | 2026-07-23 |
+| 27 | **Plataforma agnostica e vendavel** | NENHUM servico de plataforma pode ter regras engessadas. Clientes customizam via schemas Apicurio e Webhooks. | 2026-07-24 |
+| 28 | **Regra CQRS No Dual-Write** | A API Gateway (`event-api`) NAO publica mensagens nem salva no Mongo. Ela salva no Postgres (CommandRepository) e retorna 202 (Fast Return). O Debezium orquestra o resto. | 2026-07-24 |
 
 ---
 
-## Estrutura de Diretórios (Target Final)
+## Estrutura de Diretorios (Target Final)
 
 ```
 agnostic-platform/
-├── ROADMAP.md                             ← TRACKING MASTER (fases, status, %)
-├── PROJECT_CONTEXT.md                     ← este arquivo (decisões, configs)
+├── ROADMAP.md                             # TRACKING MASTER (fases, status, %)
+├── PROJECT_CONTEXT.md                     # este arquivo (decisoes, configs)
 ├── README.md
-├── .cursorrules                           ← instrução para IAs
+├── .agents/AGENTS.md                      # regras estritas para IAs (ex: CQRS, sem acento)
 │
 ├── docs/
-│   ├── arch/                              (existente — diagramas originais)
-│   ├── study/                             (existente — estudo inicial)
-│   ├── sdd/sdd.md                         ← Software Design Document
-│   ├── sda/sda.md                         ← Software Design Architecture
-│   ├── bdd/features/*.feature             ← 83 cenários BDD
-│   ├── api-audit.md                       ← 12 problemas API legada
-│   ├── services-design.md                 ← Detalhamento dos 5 serviços
-│   ├── observability-design.md            ← Stack LGTM
-│   └── platform/                          ← NOVO
-│       ├── platform-design.md             ← Design multi-celular
-│       ├── cloudevents-envelope.md         ← Spec do envelope
-│       ├── cell-specification.md          ← Template de célula
-│       ├── schema-registry-guide.md       ← Apicurio Registry
-│       └── lakehouse-design.md            ← Medallion (Bronze/Silver/Gold)
+│   ├── arch/                              (diagramas originais)
+│   ├── study/                             (estudo inicial)
+│   ├── sdd/sdd.md                         # Software Design Document
+│   ├── sda/sda.md                         # Software Design Architecture
+│   ├── bdd/features/*.feature             # 83 cenarios BDD
+│   ├── api-audit.md                       # 12 problemas da API base legada
+│   ├── services-design.md                 # Detalhamento da Topologia Agnostica
+│   ├── observability-design.md            # Stack LGTM
+│   ├── platform/                          
+│       ├── platform-design.md             # Design multi-celular
+│       ├── cloudevents-envelope.md        # Spec do envelope
+│       ├── cell-specification.md          # Template de celula
+│       ├── schema-registry-guide.md       # Apicurio Registry
+│       └── lakehouse-design.md            # Medallion (Bronze/Silver/Gold)
 │
-├── platform/                              ← NOVO: componentes compartilhados agnósticos
-│   ├── event-api/                         ← Java 25+ (Gateway/Ingestão CQRS)
-│   ├── event-persister/                   ← Java 25+ (Persiste no Mongo)
-│   ├── event-cdc-publisher/               ← Java 25+ (Mongo CDC -> Kafka/Redis)
-│   ├── webhook-validator/                 ← Java 25+ (Validação de Negócio genérica)
-│   ├── webhook-action/                    ← Java 25+ (Execução de ações genérica)
-│   ├── notification-service/              ← Java 25+ (Notificações genéricas)
-│   ├── schema-validator/                  ← Go 1.22 (Validação de schemas)
-│   └── cloudevents-sdk/                   ← Lib Java (jar)
+├── platform/                              # componentes compartilhados agnosticos
+│   ├── event-api/                         # Java 25+ (Gateway/Ingestao CQRS Fast Return)
+│   ├── cdc-sync-worker/                   # Go 1.22 ou Java (Persiste Read Model no Mongo via CDC)
+│   ├── webhook-validator/                 # Java 25+ (Validacao de Negocio generica via Webhook)
+│   ├── webhook-action/                    # Java 25+ (Execucao de acoes e sagas via Webhook)
+│   ├── notification-service/              # Java 25+ (Notificacoes multicanal)
+│   ├── schema-validator/                  # Go 1.22 (Validacao de schemas json via Apicurio)
+│   └── cloudevents-sdk/                   # Lib Java (jar) e Go (module)
 │
-├── analytics/                             ← NOVO: Lakehouse Medallion
+├── analytics/                             # Lakehouse Medallion
 │   ├── bronze/
 │   ├── silver/
 │   └── gold/
 │
-├── schemas/                               ← NOVO: JSON Schemas por produto
-│   └── product-a/
+├── schemas/                               # JSON Schemas registrados no Apicurio
+│   └── renegociation/
 │       ├── event-received.json
 │       ├── event-validated.json
 │       ├── action-completed.json
-│       ├── action-failed.json
 │       └── notification-sent.json
 │
 └── infra/
     ├── k8s-local/
-    │   ├── 00-platform.yaml              ← Apicurio, OTel, Mailpit
-    │   ├── 01-databases.yaml             ← PG, Redis, MongoDB
-    │   ├── 02-messaging.yaml             ← LocalStack (SNS/SQS)
-    │   ├── 03-observability.yaml         ← Prometheus, Tempo, Loki, Grafana
-    │   └── 04-services.yaml              ← Todos os serviços da célula
+    │   ├── 00-platform.yaml              # Apicurio, OTel, Mailpit
+    │   ├── 01-databases.yaml             # PG (wal_level=logical), Redis, MongoDB, Debezium Server
+    │   ├── 02-messaging.yaml             # RabbitMQ, Kafka
+    │   ├── 03-observability.yaml         # Prometheus, Tempo, Loki, Grafana
+    │   └── 04-services.yaml              # Plataforma + Celulas
     ├── terraform/
-    │   ├── modules/cell/
-    │   └── environments/local/
-    ├── localstack/init-aws.sh
-    ├── postgres/init.sql
+    ├── postgres/init.sql                 # Setup do banco de dados (users/logical_repl)
     ├── redis/redis.conf
     ├── mongodb/init.js
     └── observability/
-        ├── otel-collector-config.yaml
-        ├── prometheus.yml
-        ├── tempo.yaml
-        ├── loki.yaml
-        ├── alloy-config.river
-        └── grafana/
-            ├── datasources/datasources.yaml
-            └── dashboards/*.json
 ```
 
 ---
 
-## Serviços — Resumo Rápido
+## Servicos - Resumo Rapido (Plataforma)
 
-### Plataforma (Compartilhados)
+| ID | Servico | Lang | Tipo | Observacoes |
+|----|---------|------|------|-------------|
+| PLT-01 | `event-api` | Java 25+ | Gateway CQRS | Ingestao, salva no PG, HTTP 202 (Fast Return) |
+| PLT-02 | `schema-validator` | Go 1.22 | Worker | Consome RMQ, valida formato no Apicurio |
+| PLT-03 | `cdc-sync-worker` | Go 1.22 | Worker | Consome RMQ (Fanout), upsert no MongoDB |
+| PLT-04 | `webhook-validator` | Java 25+ | Worker | Aciona API da Celula p/ validar negocio |
+| PLT-05 | `webhook-action` | Java 25+ | Worker | Aciona API da Celula p/ efetivar e sagas |
 
-| ID | Serviço | Lang | Tipo | Porta |
-|----|---------|------|------|-------|
-| PLT-01 | `cell-router` | Java 25+ | API Gateway | 8080 |
-| PLT-02 | `schema-validator` | Go 1.22 | Worker | — |
-
-### Célula Genérica (Instanciada por Produto)
-
-| ID | Serviço | Lang | Tipo | Porta | Banco |
-|----|---------|------|------|-------|-------|
-| SVC-01 | `quarkus-cell-api` | Java 25+ | REST API | 8082 | PG + Redis |
-| SVC-02 | `go-business-validator` | Go 1.22 | SQS Worker | — | PG |
-| SVC-03 | `go-audit-logger` | Go 1.22 | SQS + Mongo Streams | — | MongoDB |
-| SVC-04 | `go-action-worker` | Go 1.22 | SQS Worker | — | MongoDB + PG |
-| SVC-05 | `quarkus-notification-worker`| Java 25+ | SQS Worker + API | 8083 | PG |
+*(Servicos de celula clientes (SVC-*) serao conteinerizados isoladamente conforme a contratacao da plataforma)*
 
 ---
 
-## Envelope CloudEvents (Contrato Obrigatório)
+## Envelope CloudEvents (Contrato Obrigatorio)
 
 Todo evento na plataforma usa este formato:
 ```json
@@ -171,31 +151,16 @@ Todo evento na plataforma usa este formato:
   "buzid":          "<cell-id>",
   "correlationid":  "<saga-id>",
   "traceparent":    "<W3C trace context>",
-  "data": { /* payload específico do produto */ }
+  "data": { /* payload agnostico embutido */ }
 }
 ```
 
 ---
 
-## Como Iniciar uma Nova Sessão
+## Como Iniciar uma Nova Sessao
 
-```
-1. Leia ROADMAP.md (encontre onde paramos: primeiro [ ] ou [/])
-2. Leia PROJECT_CONTEXT.md (decisões e configs)
-3. Se precisar de detalhes de domínio → docs/sdd/sdd.md
-4. Se precisar de detalhes de arquitetura → docs/sda/sda.md
-5. Informe: "Sessão XX — continuando na Fase Y, Sub-fase Z"
-6. Ao trabalhar: marque [/] no ROADMAP ao iniciar, [x] ao terminar
-```
-
----
-
-## Problemas Conhecidos da API Existente (a corrigir na Fase 2)
-
-> Ver `docs/api-audit.md` para lista completa dos 12 problemas.
-
-Top 4 críticos:
-1. Interface `ProcessorPort` usa `double`, implementação usa `BigDecimal` — polimorfismo quebrado
-2. Pagamento via HTTP GET com dados sensíveis na URL
-3. `PayDomain` com 8 campos, 0 preenchidos — domínio morto
-4. Configs hardcoded (`queueUrl`, `accessKey`) — `application.properties` vazio
+1. Leia `ROADMAP.md` (encontre onde paramos: primeiro `[ ]` ou `[/]`)
+2. Leia `PROJECT_CONTEXT.md` (este arquivo)
+3. Verifique regras estritas em `.agents/AGENTS.md` (IMPORTANTE)
+4. Se precisar de detalhes tecnicos, consulte `docs/sdd/sdd.md` e `docs/sda/sda.md`
+5. Ao trabalhar: marque `[/]` no ROADMAP ao iniciar, `[x]` ao terminar. Respeite as regras globais de IA.

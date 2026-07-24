@@ -3,6 +3,7 @@ package validator
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -47,7 +48,7 @@ func (v *SchemaValidator) Validate(group, artifactId string, data []byte) error 
 		}
 
 		compiler := jsonschema.NewCompiler()
-		if err := compiler.AddResource("schema.json", []byte(schemaStr)); err != nil {
+		if err := compiler.AddResource("schema.json", strings.NewReader(schemaStr)); err != nil {
 			return err
 		}
 		schema, err = compiler.Compile("schema.json")
