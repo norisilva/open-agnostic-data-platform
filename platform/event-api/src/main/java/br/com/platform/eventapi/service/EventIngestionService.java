@@ -71,13 +71,13 @@ public class EventIngestionService {
 
             commandRepository.persist(outbox);
 
-            event.status = "PUBLISHED";
+            event.status = "ACCEPTED";
         } catch (Exception ex) {
             event.status = "FAILED";
             return event;
         }
 
-        if (idempotencyKey != null && "PUBLISHED".equals(event.status)) {
+        if (idempotencyKey != null && "ACCEPTED".equals(event.status)) {
             redisCache.setex("idem:" + idempotencyKey, idempotencyTtlSeconds, event.id.toString());
         }
 

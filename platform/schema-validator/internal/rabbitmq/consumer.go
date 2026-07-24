@@ -176,7 +176,12 @@ func (c *Consumer) processMessage(msg amqp.Delivery) {
 	// Group is cellId (BuzID), artifactId is eventType (Type)
 	group := ce.BuzID
 	if group == "" {
-		group = "default"
+		if errDLQ := c.publishToDLQ(msg.Body, "Missing required CloudEvent field: buzid"); errDLQ != nil {
+			msg.Nack(false, true)
+		} else {
+			msg.Ack(false)
+		}
+		return
 	}
 	artifactId := ce.Type
 

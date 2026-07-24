@@ -1,0 +1,32 @@
+# Java/Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# Go
+bin/
+*.exe
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# AI-generated planning & architectural docs
+docs/sdd/
+docs/sda/
+docs/study/
+docs/api-audit.md
+docs/services-design.md
+docs/observability-design.md
+docs/platform/
+.cursorrules
+.antigravity/
+
+# Internal docs and load tests
+ROADMAP.md
+PROJECT_CONTEXT.md
+task.md
+infra/load-tests/mass.csv
