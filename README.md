@@ -54,6 +54,3 @@ The entire infrastructure runs locally via Podman Kube Play, utilizing native Ku
    `podman kube play infra/k8s-local/03-observability.yaml`
    `podman kube play infra/k8s-local/04-services.yaml`
 
-## Documentation
-
-Detailed architectural decisions, roadmaps, and designs can be found in `PROJECT_CONTEXT.md` and `ROADMAP.md`.
