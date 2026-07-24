@@ -1,4 +1,4 @@
-package br.com.platform.eventapi.domain;
+package br.com.platform.eventcdcpublisher.domain;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -207,6 +207,7 @@
 - [ ] **Tratamento HTTP 200:** Validação passou, publica no tópico `event-validated`
 - [ ] **Tratamento HTTP 400/422:** Validação de negócio falhou (ex: "boleto vencido").
   - Extrai a mensagem de erro do payload do cliente.
+  - Publica evento `event-validation-failed` no SNS para registrar a falha (trilha de auditoria / atualização de status).
   - Publica evento `notification.requested` no SNS para alertar o chamador.
 - [ ] OTel + Métricas (taxa de erro do webhook, latência)
 

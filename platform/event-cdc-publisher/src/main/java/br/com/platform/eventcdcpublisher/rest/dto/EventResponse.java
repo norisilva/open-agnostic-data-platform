@@ -1,4 +1,4 @@
-package br.com.platform.eventapi.rest.dto;
+package br.com.platform.eventcdcpublisher.rest.dto;
 
 import java.time.Instant;
 import java.util.UUID;

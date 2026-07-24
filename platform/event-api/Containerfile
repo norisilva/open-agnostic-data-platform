@@ -3,7 +3,5 @@ WORKDIR /work/
 COPY --chown=1001:root target/*-runner /work/application
 EXPOSE 8080
 USER 1001
-# Runtime: all config from env vars (12-Factor III)
-# Required vars: DB_URL, DB_USER, DB_PASS, REDIS_URL, AWS_REGION,
-#                PLATFORM_SNS_TOPIC_ARN_PATTERN, OTEL_EXPORTER_OTLP_ENDPOINT
+
 CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
