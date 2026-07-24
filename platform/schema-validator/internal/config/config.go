@@ -1,7 +1,5 @@
 // Package config loads all runtime configuration from environment variables,
 // following 12-Factor App principle III: "Store config in the environment".
-// Defaults are suitable for local development (LocalStack + Apicurio local).
-// In production, all vars MUST be supplied via container env / Terraform.
 package config
 
 import (
@@ -12,36 +10,31 @@ import (
 
 // Config holds all externalized runtime configuration.
 type Config struct {
-	// SQS source queue for validation input
-	SQSQueueURL string
-	// SQS destination queue for validated events
-	SQSDestinationURL string
-	// SQS dead-letter queue for rejected events
-	SQSDLQUrl string
+	// AMQP URL (RabbitMQ)
+	AMQPURL string
+	// Exchange name
+	ExchangeName string
+	// Queue to consume from
+	QueueName string
+	// DLQ Exchange or Queue name
+	DLQName string
 	// Max concurrent messages to process (controls goroutine fan-out)
-	SQSConcurrency int
+	Concurrency int
 	// Apicurio Schema Registry base URL
 	ApicurioURL string
-	// AWS region (used by SDK)
-	AWSRegion string
-	// AWS endpoint override — set to LocalStack URL in dev, empty in prod
-	AWSEndpoint string
 	// Schema cache TTL
 	SchemaCacheTTL time.Duration
 }
 
 // Load reads all config from environment variables with sensible dev defaults.
-// In prod (ECS/EKS), these are injected by the Terraform task definition.
 func Load() *Config {
 	return &Config{
-		SQSQueueURL:       getEnv("SQS_QUEUE_URL", "http://localhost:4566/000000000000/validation-queue"),
-		SQSDestinationURL: getEnv("SQS_DESTINATION_URL", "http://localhost:4566/000000000000/router-queue"),
-		SQSDLQUrl:         getEnv("SQS_DLQ_URL", "http://localhost:4566/000000000000/validation-dlq"),
-		SQSConcurrency:    getEnvInt("SQS_CONCURRENCY", 10),
-		ApicurioURL:       getEnv("APICURIO_URL", "http://localhost:8081"),
-		AWSRegion:         getEnv("AWS_REGION", "us-east-1"),
-		// AWS_ENDPOINT_URL: set to LocalStack in dev, empty string in prod (uses real AWS)
-		AWSEndpoint:    getEnv("AWS_ENDPOINT_URL", "http://localhost:4566"),
+		AMQPURL:        getEnv("AMQP_URL", "amqp://guest:guest@localhost:5672/"),
+		ExchangeName:   getEnv("EXCHANGE_NAME", "platform.exchange"),
+		QueueName:      getEnv("QUEUE_NAME", "schema-validation-queue"),
+		DLQName:        getEnv("DLQ_NAME", "schema-validation-dlq"),
+		Concurrency:    getEnvInt("CONCURRENCY", 10),
+		ApicurioURL:    getEnv("APICURIO_URL", "http://localhost:8081"),
 		SchemaCacheTTL: time.Duration(getEnvInt("SCHEMA_CACHE_TTL_SECONDS", 300)) * time.Second,
 	}
 }
@@ -61,4 +54,3 @@ func getEnvInt(key string, fallback int) int {
 	}
 	return fallback
 }
-

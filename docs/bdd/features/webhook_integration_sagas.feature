@@ -12,7 +12,7 @@ Funcionalidade: Integração com Células via Webhooks e Sagas
   Para validar regras de negócio cliente-específicas ou executar ações, lidando com falhas via Saga
 
   Contexto:
-    Dado que os workers de webhook estão consumindo das filas SQS genéricas
+    Dado que os workers de webhook estão consumindo das filas do RabbitMQ genéricas
     E a Célula configurou suas URLs de validação e ação nas variáveis de ambiente
 
   Cenário: Webhook Validator aprova evento

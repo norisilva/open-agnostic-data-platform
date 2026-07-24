@@ -6,28 +6,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.*;
 
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletionStage;
 
 /**
- * Generic SQS consumer for CloudEvents of type 'notification.requested'.
+ * Generic AMQP consumer for CloudEvents of type 'notification.requested'.
  *
  * Expected CloudEvent payload fields (inside 'data'):
  *   - templateName  : String — Qute template filename (e.g., "receipt-email")
  *   - recipient     : String — destination email
  *   - subject       : String — email subject line
  *   - templateData  : Object — arbitrary data passed to the template
- *
- * No business fields are hard-coded here. The payload schema is defined
- * per cell in Apicurio Registry under group '{cellId}' / artifact 'notification.requested'.
  */
 @ApplicationScoped
 public class NotificationEventConsumer {
@@ -35,56 +28,16 @@ public class NotificationEventConsumer {
     private static final Logger LOG = Logger.getLogger(NotificationEventConsumer.class);
 
     @Inject
-    SqsClient sqsClient;
-
-    @Inject
     NotificationDispatchService dispatchService;
 
     @Inject
     ObjectMapper mapper;
 
-    /** Env var: NOTIFICATION_QUEUE_URL */
-    @ConfigProperty(name = "platform.notification.queue-url",
-                    defaultValue = "http://localhost:4566/000000000000/notification-queue")
-    String queueUrl;
-
-    /** Env var: NOTIFICATION_CONSUMER_CONCURRENCY */
-    @ConfigProperty(name = "platform.notification.concurrency", defaultValue = "5")
-    int concurrency;
-
-    @PostConstruct
+    @Incoming("notifications")
     @RunOnVirtualThread
-    void startPolling() {
-        // Use virtual threads for the poll loop — lightweight, no platform thread blocking
-        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
-        for (int i = 0; i < concurrency; i++) {
-            executor.submit(this::pollLoop);
-        }
-        LOG.infof("Started %d virtual thread SQS pollers on %s", concurrency, queueUrl);
-    }
-
-    private void pollLoop() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                ReceiveMessageResponse response = sqsClient.receiveMessage(
-                    ReceiveMessageRequest.builder()
-                        .queueUrl(queueUrl)
-                        .maxNumberOfMessages(10)
-                        .waitTimeSeconds(20)
-                        .build()
-                );
-                for (Message msg : response.messages()) {
-                    processMessage(msg);
-                }
-            } catch (Exception ex) {
-                LOG.errorf(ex, "SQS poll error on %s", queueUrl);
-            }
-        }
-    }
-
-    private void processMessage(Message msg) {
+    public CompletionStage<Void> processMessage(Message<String> msg) {
         try {
-            JsonNode cloudEvent = mapper.readTree(msg.body());
+            JsonNode cloudEvent = mapper.readTree(msg.getPayload());
 
             // Extract CloudEvent envelope fields
             String cellId   = getText(cloudEvent, "buzid", "unknown");
@@ -99,24 +52,18 @@ public class NotificationEventConsumer {
 
             if (templateName == null || recipient == null) {
                 LOG.warnf("Missing templateName or recipient in event %s", eventId);
-                deleteMessage(msg);
-                return;
+                return msg.ack();
             }
 
             dispatchService.dispatch(cellId, UUID.fromString(eventId), templateName,
                                      recipient, subject, templateData);
-            deleteMessage(msg);
+            
+            return msg.ack();
 
         } catch (Exception ex) {
-            LOG.errorf(ex, "Failed to process notification message: %s", msg.messageId());
+            LOG.errorf(ex, "Failed to process notification message");
+            return msg.nack(ex);
         }
-    }
-
-    private void deleteMessage(Message msg) {
-        sqsClient.deleteMessage(DeleteMessageRequest.builder()
-            .queueUrl(queueUrl)
-            .receiptHandle(msg.receiptHandle())
-            .build());
     }
 
     private String getText(JsonNode node, String field, String defaultValue) {

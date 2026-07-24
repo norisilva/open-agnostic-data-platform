@@ -56,4 +56,4 @@ The entire infrastructure runs locally via Podman Kube Play, utilizing native Ku
 
 ## Documentation
 
-Detailed architectural decisions, roadmaps, and designs can be found in `PROJECT_CONTEXT.md` and `ROADMAP.md`.
+Detailed documentation and ADRs can be found in the `docs/` folder.

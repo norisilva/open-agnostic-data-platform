@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -15,7 +16,7 @@ func TestSchemaValidatorCache(t *testing.T) {
 
 	// Mocking a schema compiler and cache for testing
 	compiler := jsonschema.NewCompiler()
-	err := compiler.AddResource("schema.json", []byte(`{"type": "object", "properties": {"name": {"type": "string"}}}`))
+	err := compiler.AddResource("schema.json", strings.NewReader(`{"type": "object", "properties": {"name": {"type": "string"}}}`))
 	if err != nil {
 		t.Fatalf("Failed to add resource: %v", err)
 	}
