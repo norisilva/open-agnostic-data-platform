@@ -76,10 +76,10 @@ func NewConsumer(cfg *config.Config) (*Consumer, error) {
 		return nil, err
 	}
 
-	// Bind queue for validation (assuming routing key "event.received" for ingest)
+	// Bind queue for validation (match Debezium RabbitMQ sink routing key)
 	err = ch.QueueBind(
 		q.Name,           // queue name
-		"*.event.received", // routing key pattern
+		"platform.events", // routing key pattern
 		cfg.ExchangeName, // exchange
 		false,
 		nil,
@@ -117,6 +117,10 @@ func (c *Consumer) Start(ctx context.Context) error {
 	defer c.conn.Close()
 	defer c.ch.Close()
 	defer c.pubCh.Close()
+
+	if c.cfg.Concurrency < 1 {
+		return fmt.Errorf("CONCURRENCY must be >= 1")
+	}
 
 	err := c.ch.Qos(c.cfg.Concurrency, 0, false)
 	if err != nil {
@@ -161,8 +165,11 @@ func (c *Consumer) processMessage(msg amqp.Delivery) {
 	ce, err := cloudevents.Unmarshal[json.RawMessage](msg.Body)
 	if err != nil {
 		log.Printf("Failed to parse CloudEvent: %v", err)
-		c.publishToDLQ(msg.Body, "Parse failed: "+err.Error())
-		msg.Ack(false)
+		if errDLQ := c.publishToDLQ(msg.Body, "Parse failed: "+err.Error()); errDLQ != nil {
+			msg.Nack(false, true)
+		} else {
+			msg.Ack(false)
+		}
 		return
 	}
 
@@ -176,8 +183,11 @@ func (c *Consumer) processMessage(msg amqp.Delivery) {
 	err = c.validator.Validate(group, artifactId, ce.Data)
 	if err != nil {
 		log.Printf("Validation failed for %s/%s: %v", group, artifactId, err)
-		c.publishToDLQ(msg.Body, fmt.Sprintf("Schema validation failed: %v", err))
-		msg.Ack(false)
+		if errDLQ := c.publishToDLQ(msg.Body, fmt.Sprintf("Schema validation failed: %v", err)); errDLQ != nil {
+			msg.Nack(false, true)
+		} else {
+			msg.Ack(false)
+		}
 		return
 	}
 
@@ -193,7 +203,7 @@ func (c *Consumer) processMessage(msg amqp.Delivery) {
 	msg.Ack(false)
 }
 
-func (c *Consumer) publishToDLQ(body []byte, reason string) {
+func (c *Consumer) publishToDLQ(body []byte, reason string) error {
 	c.pubMutex.Lock()
 	defer c.pubMutex.Unlock()
 
@@ -213,6 +223,7 @@ func (c *Consumer) publishToDLQ(body []byte, reason string) {
 	if err != nil {
 		log.Printf("Failed to publish to DLQ: %v", err)
 	}
+	return err
 }
 
 func (c *Consumer) publishValidated(routingKey string, body []byte) error {

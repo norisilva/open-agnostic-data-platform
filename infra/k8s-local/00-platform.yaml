@@ -10,7 +10,7 @@ data:
       - job_name: 'quarkus-apps'
         metrics_path: '/metrics'
         static_configs:
-          - targets: ['localhost:8080', 'localhost:8081']
+          - targets: ['host.containers.internal:8080', 'host.containers.internal:8081']
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -51,7 +51,7 @@ spec:
       image: quay.io/apicurio/apicurio-registry:3.3.0
       ports:
         - containerPort: 8080
-          hostPort: 8082
+          hostPort: 8081
 
     - name: postgres
       image: postgres:16-alpine
@@ -95,7 +95,7 @@ spec:
           hostPort: 8025
 
     - name: prometheus
-      image: prom/prometheus:latest
+      image: prom/prometheus:v2.45.0
       ports:
         - containerPort: 9090
           hostPort: 9090
@@ -105,7 +105,7 @@ spec:
           subPath: prometheus.yml
 
     - name: grafana
-      image: grafana/grafana:latest
+      image: grafana/grafana:10.0.3
       ports:
         - containerPort: 3000
           hostPort: 3000
