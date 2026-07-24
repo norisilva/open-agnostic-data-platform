@@ -6,6 +6,27 @@ By uniting exact, real-time command routing with massive analytical pipelines, t
 
 ## Architecture Highlights
 
+```mermaid
+flowchart TD
+    Client["Client Request"] -->|HTTP POST| Gateway["Platform Event API (Quarkus)"]
+    Gateway -->|Idempotency Check| Redis[(Redis)]
+    Gateway -->|Fast Dispatch| SNS["SNS Topic"]
+    
+    SNS -->|Fan-out| SQS_Persist["SQS (Persist Queue)"]
+    SNS -->|Fan-out| SQS_Validate["SQS (Validation Queue)"]
+    
+    SQS_Persist --> Persister["Event Persister (Java 25)"]
+    Persister --> MongoDB[(MongoDB Event Store)]
+    
+    MongoDB -.->|Change Streams CDC| CDC_Publisher["Event CDC Publisher"]
+    CDC_Publisher --> Kafka["Kafka / Redpanda"]
+    
+    Kafka --> Analytics["Lakehouse (Bronze / Silver / Gold)"]
+    
+    SQS_Validate --> WebhookVal["Webhook Validator (Java 25)"]
+    WebhookVal --> ClientWebhook["Client Custom Webhook API"]
+```
+
 *   Cell-Based Architecture: Unified codebase with infrastructure isolated by product or client.
 *   Event-Driven CQRS: Fast Dispatching via Quarkus API Gateway, deferring persistence to asynchronous workers.
 *   Agnostic Core: Zero business logic in platform services. All domain rules are delegated to external Webhooks (Validator and Action Webhooks).
