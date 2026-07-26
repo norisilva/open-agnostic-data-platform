@@ -14,7 +14,7 @@ bin/
 *.iml
 .vscode/
 
-# AI-generated planning & architectural docs
+
 docs/sdd/
 docs/sda/
 docs/study/
@@ -22,8 +22,6 @@ docs/api-audit.md
 docs/services-design.md
 docs/observability-design.md
 docs/platform/
-.cursorrules
-.antigravity/
 
 # Internal docs and load tests
 ROADMAP.md
